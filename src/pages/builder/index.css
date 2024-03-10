@@ -1,0 +1,10 @@
+.builder{
+  height:100vh;
+  /* height:100%; */
+  /* position: relative; */
+}
+
+.builderContent{
+  /* margin-top: 10vh; */
+  height: 90vh;
+}
