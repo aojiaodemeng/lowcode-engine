@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs } from "antd";
+import { Tabs, CollapseProps, Collapse } from "antd";
 import type { TabsProps } from "antd";
 import "./index.css";
 import * as components from "./component";
@@ -26,20 +26,22 @@ export const LeftPart = () => {
   };
 
   console.log(components);
-  const renderComponet = () => {
+  const renderComponent = (comTypeList: string[]) => {
+    const list = Object.keys(components).filter((item) =>
+      comTypeList.includes(item)
+    );
     return (
-      <div>
-        {Object.keys(components).map((name) => {
+      <div className="componetGroup">
+        {list.map((name) => {
           const Icon = componentIconMap[name];
           const text = componentTextMap[name];
           return (
-            <div
-              onDragStart={onDragStart(name)}
-              draggable
-              key={name}
-              className="componentItem"
-            >
-              <div style={{ display: "inline-block" }}>
+            <div key={name} className="componentItem">
+              <div
+                onDragStart={onDragStart(name)}
+                draggable
+                style={{ display: "inline-block" }}
+              >
                 <Icon style={{ marginRight: "10px" }} />
                 <span>{text}</span>
               </div>
@@ -49,6 +51,31 @@ export const LeftPart = () => {
       </div>
     );
   };
+  // 每个折叠面板下，根据不同的组件列表类型，展示不同的组件
+  const collapseItems: CollapseProps["items"] = [
+    {
+      key: "enterDataCom",
+      label: "数据录入组件",
+      children: renderComponent([
+        "Input",
+        "Checkbox",
+        "Radio",
+        "Rate",
+        "Switch",
+      ]),
+    },
+    {
+      key: "containerCom",
+      label: "容器组件",
+      children: renderComponent(["Card"]),
+    },
+    {
+      key: "otherCom",
+      label: "其他组件",
+      children: renderComponent(["Button", "Icon"]),
+    },
+  ];
+
   const items: TabsProps["items"] = [
     {
       key: "component",
@@ -57,7 +84,13 @@ export const LeftPart = () => {
           组件
         </div>
       ),
-      children: renderComponet(),
+      children: (
+        <Collapse
+          className="comCollapse"
+          items={collapseItems}
+          defaultActiveKey={"enterDataCom"}
+        />
+      ),
     },
     {
       key: "data",

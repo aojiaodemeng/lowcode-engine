@@ -1,4 +1,4 @@
-import { Input, Switch, Select, Button } from "antd";
+import { Input, Switch, Select, Button, ColorPicker } from "antd";
 import { useState } from "react";
 export default function InputComponent(props: any) {
   const {
@@ -48,7 +48,11 @@ export default function InputComponent(props: any) {
         return (
           <Input
             type="number"
-            value={selectNode[value] || ""}
+            value={
+              selectNode[value] ||
+              parseInt(selectNode?.comStyle?.[value] || "") ||
+              "0"
+            }
             style={{ width: "120px" }}
             defaultValue={defaultValue}
             onChange={onChange}
@@ -60,6 +64,18 @@ export default function InputComponent(props: any) {
           <Button onClick={showModal} style={{ width: "120px" }}>
             {label}
           </Button>
+        );
+      }
+      case "color": {
+        return (
+          <ColorPicker
+            disabledAlpha
+            showText
+            value={selectNode?.comStyle?.[value] || ""}
+            style={{ width: "120px" }}
+            defaultValue={defaultValue}
+            onChangeComplete={onChange}
+          />
         );
       }
     }

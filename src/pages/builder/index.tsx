@@ -1,4 +1,3 @@
-import React from "react";
 import { LeftPart } from "./leftPart";
 import MainPart from "./mainPart";
 import { RightPart } from "./rightPart";

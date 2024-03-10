@@ -5,4 +5,5 @@ import Checkbox from "./checkBox";
 import Radio from "./radio";
 import Rate from "./rate";
 import Switch from "./switch";
-export { Input, Icon, Button, Checkbox, Radio, Rate, Switch };
+import Card from "./card";
+export { Input, Icon, Button, Checkbox, Radio, Rate, Switch, Card };

@@ -6,6 +6,7 @@ import { radioAttribute } from "./comAttribute/radioAttribute";
 import { ComAttribute } from "./comAttribute/interface";
 import { rateAttribute } from "./comAttribute/rateAttribute";
 import { switchAttribute } from "./comAttribute/switchAttribute";
+import { cardAttribute } from "./comAttribute/cardAttribute";
 interface AttributeMap {
   [key: string]: ComAttribute[];
 }
@@ -18,6 +19,7 @@ const attributeMap: AttributeMap = {
   Radio: radioAttribute,
   Rate: rateAttribute,
   Switch: switchAttribute,
+  Card: cardAttribute,
 };
 
 export { attributeMap };

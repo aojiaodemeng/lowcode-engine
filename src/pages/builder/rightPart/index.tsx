@@ -3,10 +3,10 @@ import { Tabs, Input } from "antd";
 import type { TabsProps } from "antd";
 import "./index.css";
 import { attributeMap } from "./staticUtils/attributeMap";
-import InputComponent from "./staticComponet/InputComponent";
+import InputComponent from "./staticComponent/InputComponent";
 import Store from "../../../store/index";
 import { subscribeHook } from "../../../store/subscribe";
-
+import { styleMap } from "./staticUtils/styleMap";
 export const RightPart = () => {
   const comList = JSON.parse(JSON.stringify(Store.getState().comList));
   const selectCom = Store.getState().selectCom;
@@ -46,6 +46,50 @@ export const RightPart = () => {
       Store.dispatch({ type: "changeComList", value: comList });
     };
   };
+  const getStylePanel = () => {
+    const comType = selectNode?.comType || "";
+    const styleList = styleMap[comType] || [];
+    return (
+      <div className="attributePanel">
+        {styleList.map((item, index) => {
+          return (
+            <div key={index} className="attributeItem">
+              <label className="attributeLabel">{item.label}</label>
+              <div className="attributeItemValue">
+                <InputComponent
+                  selectNode={selectNode}
+                  {...item}
+                  onChange={changeComStyle(item.value)}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+  const changeComStyle = (value: string) => {
+    return (e: any) => {
+      let attribute = e;
+      if (typeof e === "object") {
+        if (["color", "backgroundColor", "borderColor"].includes(value)) {
+          attribute = e.toHexString();
+        } else {
+          attribute = e.target.value;
+        }
+      }
+      if (["width", "height", "borderWidth", "fontSize"].includes(value)) {
+        attribute += "px";
+      }
+      if (selectNode) {
+        if (!selectNode.comStyle) {
+          selectNode.comStyle = {};
+        }
+        selectNode.comStyle[value] = attribute;
+      }
+      Store.dispatch({ type: "changeComList", value: comList });
+    };
+  };
 
   const items: TabsProps["items"] = [
     {
@@ -64,7 +108,7 @@ export const RightPart = () => {
           样式
         </div>
       ),
-      children: "Content of Tab Pane 2",
+      children: getStylePanel(),
     },
   ];
 
