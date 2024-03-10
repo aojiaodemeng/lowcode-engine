@@ -3,12 +3,14 @@ import "./index.css";
 import * as components from "../leftPart/component";
 import Store from "../../../store/index";
 import { subscribeHook } from "../../../store/subscribe";
-
-interface ComJson {
+import { componentTextMap } from "../leftPart/iconList";
+let num = 1;
+export interface ComJson {
   comType: string;
   comId: string;
   caption?: string;
   style?: any;
+  childList?: ComJson[];
 }
 
 interface Distance {
@@ -33,7 +35,6 @@ export default function MainCom() {
   });
 
   const onDrop = (e: any) => {
-    console.log("onDrop");
     distance.current.endLeft = e.clientX;
     distance.current.endTop = e.clientY;
     let style: any;
@@ -64,6 +65,7 @@ export default function MainCom() {
         comType: nowCom,
         style,
         comId,
+        caption: componentTextMap[nowCom] + num++,
       };
       comList.push(comNode);
       setSelectId(comId);

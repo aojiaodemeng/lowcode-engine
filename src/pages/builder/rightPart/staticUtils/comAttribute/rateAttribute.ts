@@ -2,6 +2,11 @@ import { ComAttribute } from "./interface";
 
 const rateAttribute: ComAttribute[] = [
   {
+    label: "设置标题",
+    value: "caption",
+    type: "input",
+  },
+  {
     label: "再次点击允许清除",
     value: "allowClear",
     type: "switch",

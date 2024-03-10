@@ -2,6 +2,11 @@ import { ComAttribute } from "./interface";
 
 const iconAttribute: ComAttribute[] = [
   {
+    label: "设置标题",
+    value: "caption",
+    type: "input",
+  },
+  {
     label: "图标旋转角度",
     value: "rotate",
     type: "number",

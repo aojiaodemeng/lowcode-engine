@@ -1,10 +1,13 @@
-import React from "react";
-import { Tabs, CollapseProps, Collapse } from "antd";
+import React, { useState } from "react";
+import { Tabs, CollapseProps, Collapse, Tree, Dropdown } from "antd";
 import type { TabsProps } from "antd";
 import "./index.css";
 import * as components from "./component";
 import Store from "../../../store";
 import { componentIconMap, componentTextMap } from "./iconList";
+import { subscribeHook } from "../../../store/subscribe";
+import EditJson from "../../modal/editJson";
+
 declare global {
   //设置全局属性
   interface Window {
@@ -16,6 +19,10 @@ declare global {
   }
 }
 export const LeftPart = () => {
+  const [showJson, setShowJson] = useState(false);
+  const [jsonComId, setJsonComId] = useState("");
+  subscribeHook();
+
   const onDragStart = (name: string) => {
     return () => {
       console.log("onDragStart:", name);
@@ -24,8 +31,55 @@ export const LeftPart = () => {
       Store.dispatch({ type: "changeNowCom", value: name });
     };
   };
+  const dropItems = [
+    {
+      label: "查看JSON",
+      key: "showJson",
+    },
+  ];
+  const menuOnClick = (comId: string) => {
+    return (menuItem: any) => {
+      if (menuItem.key === "showJson") {
+        setShowJson(true);
+        setJsonComId(comId);
+      }
+    };
+  };
+  const getTreeList = () => {
+    const comList = Store.getState().comList;
 
-  console.log(components);
+    const toTreeData = (arr: []) => {
+      return arr.map((item: any) => {
+        const node: any = {
+          title: (
+            <div>
+              <Dropdown
+                menu={{ onClick: menuOnClick(item.comId), items: dropItems }}
+                trigger={["contextMenu"]}
+              >
+                <span>{item.caption}</span>
+              </Dropdown>
+            </div>
+          ),
+          key: item.comId,
+        };
+        if (item.childList) {
+          node.children = toTreeData(item.childList);
+        }
+        return node;
+      });
+    };
+
+    const treeData = [
+      {
+        title: "组件协议",
+        key: "zujianxieyi",
+        children: toTreeData(comList),
+      },
+    ];
+
+    return <Tree className="leftList" showLine={true} treeData={treeData} />;
+  };
   const renderComponent = (comTypeList: string[]) => {
     const list = Object.keys(components).filter((item) =>
       comTypeList.includes(item)
@@ -99,7 +153,7 @@ export const LeftPart = () => {
           数据
         </div>
       ),
-      children: "Content of Tab Pane 2",
+      children: getTreeList(),
     },
   ];
 
@@ -107,6 +161,11 @@ export const LeftPart = () => {
   return (
     <div className="leftPart">
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+      <EditJson
+        jsonComId={jsonComId}
+        showJson={showJson}
+        setShowJson={setShowJson}
+      />
     </div>
   );
 };
