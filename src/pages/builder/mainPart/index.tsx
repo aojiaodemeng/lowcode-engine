@@ -4,6 +4,7 @@ import * as components from "../leftPart/component";
 import Store from "../../../store/index";
 import { subscribeHook } from "../../../store/subscribe";
 import { componentTextMap } from "../leftPart/iconList";
+import { getComById } from "../../../utils/nodeUtils";
 let num = 1;
 export interface ComJson {
   comType: string;
@@ -39,18 +40,20 @@ export default function MainCom() {
     distance.current.endTop = e.clientY;
     let style: any;
     if (dragComId) {
-      const node = comList.find((item: ComJson) => item.comId === dragComId);
-      node.style = {
-        ...node.style,
-        left:
-          parseInt(node.style.left) +
-          (e.clientX - (distance.current.startLeft || 0)) +
-          "px",
-        top:
-          parseInt(node.style.top) +
-          (e.clientY - (distance.current.startTop || 0)) +
-          "px",
-      };
+      const node = getComById(dragComId, comList);
+      if (node) {
+        node.style = {
+          ...node.style,
+          left:
+            parseInt(node.style.left) +
+            (e.clientX - (distance.current.startLeft || 0)) +
+            "px",
+          top:
+            parseInt(node.style.top) +
+            (e.clientY - (distance.current.startTop || 0)) +
+            "px",
+        };
+      }
       setDragComId("");
       Store.dispatch({ type: "changeSelectCom", value: dragComId });
     } else {
@@ -91,10 +94,72 @@ export default function MainCom() {
   };
 
   const selectCom = (com: ComJson) => {
-    return () => {
+    return (e: any) => {
+      e.stopPropagation();
       setSelectId(com.comId);
       Store.dispatch({ type: "changeSelectCom", value: com.comId });
     };
+  };
+  const onDropContainer = (com: ComJson) => {
+    return (e: any) => {
+      const dragCom = getComById(dragComId, comList);
+      if (com.comType === "Form") {
+        if (dragCom && dragCom !== com) {
+          const index = comList.findIndex(
+            (item: any) => item.comId === dragCom?.comId
+          );
+          if (index > -1) {
+            comList.splice(index, 1);
+          }
+          if (!com.childList) {
+            com.childList = [];
+          }
+          delete dragCom.style;
+          com.childList.push(dragCom);
+          Store.dispatch({ type: "changeComList", value: comList });
+          e.stopPropagation();
+          setDragComId("");
+          return;
+        } else if (dragCom) {
+          return;
+        }
+        let comId = `comId_${Date.now()}`;
+        const comNode = {
+          comType: nowCom,
+          comId,
+        };
+        if (!com.childList) {
+          com.childList = [];
+        }
+        com.childList.push(comNode);
+        Store.dispatch({ type: "changeComList", value: comList });
+        e.stopPropagation();
+      }
+    };
+  };
+  const getComponent = (com: ComJson) => {
+    const Com = components[com.comType as keyof typeof components];
+    return (
+      <div
+        onDrop={onDropContainer(com)}
+        key={com.comId}
+        onClick={selectCom(com)}
+      >
+        <div
+          draggable
+          onDragStart={onDragStart(com)}
+          className={com.comId === selectId ? "selectCom" : ""}
+          style={com.style}
+        >
+          <Com {...com}>
+            {com.childList &&
+              com.childList.map((item) => {
+                return getComponent(item);
+              })}
+          </Com>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -105,22 +170,24 @@ export default function MainCom() {
       className="mainPart"
     >
       {comList.map((com: ComJson) => {
-        const Com = components[com.comType as keyof typeof components];
-        return (
-          <div
-            key={com.comId}
-            onClick={selectCom(com)}
-            draggable
-            onDragStart={onDragStart(com)}
-          >
-            <div
-              className={com.comId === selectId ? "selectCom" : ""}
-              style={com.style}
-            >
-              <Com {...com} />
-            </div>
-          </div>
-        );
+        return getComponent(com);
+        // 以下是非容器组件的渲染方式
+        // const Com = components[com.comType as keyof typeof components];
+        // return (
+        //   <div
+        //     key={com.comId}
+        //     onClick={selectCom(com)}
+        //     draggable
+        //     onDragStart={onDragStart(com)}
+        //   >
+        //     <div
+        //       className={com.comId === selectId ? "selectCom" : ""}
+        //       style={com.style}
+        //     >
+        //       <Com {...com} />
+        //     </div>
+        //   </div>
+        // );
       })}
     </div>
   );

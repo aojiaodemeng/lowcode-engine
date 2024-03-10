@@ -7,6 +7,7 @@ import { ComAttribute } from "./comAttribute/interface";
 import { rateAttribute } from "./comAttribute/rateAttribute";
 import { switchAttribute } from "./comAttribute/switchAttribute";
 import { cardAttribute } from "./comAttribute/cardAttribute";
+import { formAttribute } from "./comAttribute/formAttribute";
 interface AttributeMap {
   [key: string]: ComAttribute[];
 }
@@ -20,6 +21,7 @@ const attributeMap: AttributeMap = {
   Rate: rateAttribute,
   Switch: switchAttribute,
   Card: cardAttribute,
+  Form: formAttribute,
 };
 
 export { attributeMap };

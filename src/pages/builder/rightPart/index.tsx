@@ -7,14 +7,15 @@ import InputComponent from "./staticComponent/InputComponent";
 import Store from "../../../store/index";
 import { subscribeHook } from "../../../store/subscribe";
 import { styleMap } from "./staticUtils/styleMap";
+import { getComById } from "../../../utils/nodeUtils";
 export const RightPart = () => {
   const comList = JSON.parse(JSON.stringify(Store.getState().comList));
   const selectCom = Store.getState().selectCom;
-  const selectNode = comList.find((item: any) => item.comId === selectCom);
+  const selectNode = getComById(selectCom, comList);
   subscribeHook();
 
   const getAttributePanel = () => {
-    const comType = selectNode?.comType;
+    const comType = selectNode?.comType || "";
     const comAttributeList = attributeMap[comType] || [];
     return (
       <div className="attributePanel">
@@ -41,6 +42,9 @@ export const RightPart = () => {
       let attribute = e;
       if (typeof e === "object") {
         attribute = e.target.value;
+      }
+      if (selectNode) {
+        selectNode[value as keyof typeof selectNode] = attribute;
       }
       selectNode[value] = attribute;
       Store.dispatch({ type: "changeComList", value: comList });

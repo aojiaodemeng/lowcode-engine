@@ -15,6 +15,7 @@ declare global {
     nowCom: string; //加入对象
     renderCom: any;
     comList: any[];
+    style?: any;
     setComList: any;
   }
 }
@@ -121,7 +122,7 @@ export const LeftPart = () => {
     {
       key: "containerCom",
       label: "容器组件",
-      children: renderComponent(["Card"]),
+      children: renderComponent(["Form", "Card"]),
     },
     {
       key: "otherCom",

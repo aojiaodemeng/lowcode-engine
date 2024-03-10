@@ -2,20 +2,25 @@ import { Modal } from "antd";
 import IconList from "./iconMap.json";
 import Store from "../../../store/index";
 import { useState, useEffect } from "react";
+import { getComById } from "../../../utils/nodeUtils";
 import "./index.css";
 export default function IconSelect(props: any) {
   const { openModal, setOpenModal } = props;
   const comList = JSON.parse(JSON.stringify(Store.getState().comList));
   const selectCom = Store.getState().selectCom;
-  const selectNode = comList.find((item: any) => item.comId === selectCom);
+  const selectNode = getComById(selectCom, comList);
   const [selectIcon, setSelectIcon] = useState("");
 
   useEffect(() => {
-    setSelectIcon(selectNode.type);
+    if (selectNode) {
+      setSelectIcon(selectNode["type" as keyof typeof selectNode]);
+    }
   }, [openModal]);
 
   const handleOk = () => {
-    selectNode.type = selectIcon;
+    if (selectNode) {
+      selectNode["type" as keyof typeof selectNode] = selectIcon;
+    }
     Store.dispatch({ type: "changeComList", value: comList });
     setOpenModal(false);
     setSelectIcon("");
