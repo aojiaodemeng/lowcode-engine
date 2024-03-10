@@ -4,6 +4,7 @@ import type { TabsProps } from "antd";
 import "./index.css";
 import * as components from "./component";
 import Store from "../../../store";
+import { componentIconMap, componentTextMap } from "./iconList";
 declare global {
   //设置全局属性
   interface Window {
@@ -24,10 +25,13 @@ export const LeftPart = () => {
     };
   };
 
+  console.log(components);
   const renderComponet = () => {
     return (
       <div>
         {Object.keys(components).map((name) => {
+          const Icon = componentIconMap[name];
+          const text = componentTextMap[name];
           return (
             <div
               onDragStart={onDragStart(name)}
@@ -36,7 +40,8 @@ export const LeftPart = () => {
               className="componentItem"
             >
               <div style={{ display: "inline-block" }}>
-                <span>{name}</span>
+                <Icon style={{ marginRight: "10px" }} />
+                <span>{text}</span>
               </div>
             </div>
           );
